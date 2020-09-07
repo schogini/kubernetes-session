@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sample
+spec:
+  selector:
+    matchLabels:
+      app: sample-daemon
+  template:
+    metadata:
+      labels:
+        app: sample-daemon
+    spec:
+      containers:
+        - name: n1
+          image: ubuntu:trusty
+          command: ["/bin/bash"]
+          args:
+          - "-c"
+          - >
+            while true; do
+              echo "Collection logs";
+              sleep 10;
+            done

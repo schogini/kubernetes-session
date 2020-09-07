@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: probe-service
+spec:
+  type: NodePort
+  ports:
+    - port: 9700
+      targetPort: 80
+  selector:
+    app: probe-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probe-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probe-app
+  template:
+    metadata:
+      name: probe-pod
+      labels:
+        app: probe-app
+    spec:
+      containers:
+        - name: probe-container
+          image: gayatrisa/php-mysql-k8s-probes:7.0-apache
+          readinessProbe:
+            httpGet:
+              path: /sample.php
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 5

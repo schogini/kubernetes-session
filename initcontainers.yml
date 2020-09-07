@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpdservice
+spec:
+  selector:
+    app: customweb
+  type: NodePort
+  ports:
+    - port: 9300
+      targetPort: 80
+      nodePort: 31200
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: git-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customweb
+  template:
+    metadata:
+      labels:
+        app: customweb
+    spec:
+      volumes:
+        - name: webdata
+          emptyDir: {}
+      initContainers:
+        - name: loader
+          image: alpine/git
+          args: ["clone", "https://github.com/schogini/customweb.git", "/webdata/customweb"]
+          volumeMounts:
+            - name: webdata
+              mountPath: /webdata
+      containers:
+        - name: webapp
+          image: nginx
+          volumeMounts:
+            - name: webdata
+              mountPath: /usr/share/nginx/html

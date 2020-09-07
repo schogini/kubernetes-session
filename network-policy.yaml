@@ -1,0 +1,113 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-access-policy
+spec:
+  podSelector: # the pods on which this policy is to be applied on
+    matchLabels:
+      role: db
+  policyTypes:
+    - Ingress
+  ingress: # You can have multiple from-ports combinations under ingress - each one is controlling who can send traffic through that port; under "from" you can have multiple selectors: podSelector, namespaceSelector, ipBlock etc)
+    - from:
+        - podSelector:
+            matchLabels:
+              role: web
+      ports:
+        - protocol: TCP
+          port: 3306
+
+# STEP 1: Client #1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: web
+  template:
+    metadata:
+      labels:
+        role: web
+    spec:
+      containers:
+        - name: web
+          image: mysql:5.7
+          command: ["/bin/bash"]
+          args:
+            - "-c"
+            - >
+              while true; do
+                echo "Keep alive!";
+                sleep 10;
+              done
+          
+# STEP 2: DB Deployment & Service 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: db
+  template:
+    metadata:
+      labels:
+        role: db
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:5.6
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: dbrootpass
+          ports:
+            - containerPort: 3306
+              name: mysql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306
+  selector:
+    role: db
+
+
+# STEP 3: Client #2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: something
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: something
+  template:
+    metadata:
+      labels:
+        role: something
+    spec:
+      containers:
+        - name: something
+          image: mysql:5.7
+          command: ["/bin/bash"]
+          args:
+            - "-c"
+            - >
+              while true; do
+                echo "Keep alive!";
+                sleep 10;
+              done

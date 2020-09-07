@@ -1,0 +1,19 @@
+---
+---
+# Create it in /etc/kubernetes/manifests/ folder
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-pod2
+spec:
+  containers:
+    - name: n1
+      image: ubuntu:trusty
+      command: ["/bin/bash"]
+      args:
+        - "-c"
+        - >
+          while true; do
+            echo "Static Pod";
+            sleep 10;
+          done

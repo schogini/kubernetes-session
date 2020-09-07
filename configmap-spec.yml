@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: example-cm
+data:
+  database_name: mongodb
+  log_level: warn
+  custom_data: |
+     image.public.key=771
+     rs.public.key=qweqwe
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: configmap-pod
+spec:
+  volumes: # load config map as volume (it is mounted in the container below)
+    - name: configmap-vol
+      configMap:
+        name: example-cm
+  containers:
+    - name: configmap-container
+      image: nginx:alpine
+      env: # load a single key from a config map
+        - name: MY_DEBUG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: example-cm
+              key: log_level
+      envFrom: # load the whole config map
+        - configMapRef:
+            name: example-cm
+      volumeMounts:
+        - name: configmap-vol
+          mountPath: /etc/config
