@@ -1,4 +1,8 @@
-# Common Commands
+# Kubernetes Session Files
+These YAML files are supplements for the Kubernetes Sessions conducted by Schogini Systems.
+To know more about this session and various other sessions conducted by Schogini check out http://schogini.com
+
+# Common Kubernetes Commands
 ```
 kubectl create namespace <name>
 
@@ -41,7 +45,7 @@ kubectl create secret <type> <name> <content>
 	docker-registry
 	tls
 <content>
-	--from-file=<file path> ====> filename is the key; file content is the value
+	--from-file=<file path>
 	--from-file=<key>=<file path>
 	--from-env-file (env data)
 	--from-literal=<key>=<value>
@@ -64,26 +68,26 @@ Update Strategy:
 + RollingUpdate
 + Recreate
 
-Abbr:
-	+ pods = po
-	+ deployments = deploy
-	+ services = svc
-	+ replicasets = rs
-	+ configmap = cm
-	+ persistentvolume = pv
-	+ persistentvolumeclaim = pvc
+Abbreviation:
+ + pods = po
+ + deployments = deploy
+ + services = svc
+ + replicasets = rs
+ + configmap = cm
+ + persistentvolume = pv
+ + persistentvolumeclaim = pvc
 
-Master
+
+Cluster Setup with Kubeadm - Master Node
 ```
 kubeadm init --pod-network-cidr=10.244.0.0/16
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=<VERSION>"
 ```
-	Allow the master to be used as the node
+Allow the master to be used as the node
 ```
 kubectl taint nodes <master node> node-role.kubernetes.io/master:NoSchedule-
 ```
-
-  Default cluster domain name: cluster.local
+Default cluster domain name: cluster.local
 ```
 <service name>.<namespace>.svc.<cluster domain name>:<service port>
 ```
