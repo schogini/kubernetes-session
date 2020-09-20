@@ -28,6 +28,8 @@ spec:
       containers:
         - name: probe-container
           image: gayatrisa/php-mysql-k8s-probes:7.0-apache
+          ports:
+            - containerPort: 80
           readinessProbe:
             httpGet:
               path: /sample.php
