@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-vol-svc2
+spec:
+  type: NodePort
+  ports:
+    - port: 8070
+      targetPort: 80
+  selector:
+    app: k8s-vol2
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: k8s-vol2
+  labels:
+    app: k8s-vol2
+spec:
+  volumes:
+    - name: shared-vol
+      #emptyDir: {}
+      hostPath:
+        path: "/mnt/junk"
+  containers:
+    - name: n1
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+        - containerPort: 443
+      volumeMounts:
+        - name: shared-vol
+          mountPath: /usr/share/nginx/html
+    - name: n2
+      image: ubuntu:trusty
+      command: ["/bin/sh"]
+      args:
+        - "-c"
+        - >
+          while true; do
+            date >> /pod-data/index.html
+            echo Hello from second container >> /pod-data/index.html
+            sleep 20;
+          done
+      volumeMounts:
+        - name: shared-vol
+          mountPath: /pod-data

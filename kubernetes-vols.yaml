@@ -25,9 +25,11 @@ spec:
   containers:
   - name: first
     image: nginx
+    ports:
+      - containerPort: 80
     volumeMounts:
-    - name: shared-data
-      mountPath: /usr/share/nginx/html
+      - name: shared-data
+        mountPath: /usr/share/nginx/html
   - name: second
     image: debian
     volumeMounts:

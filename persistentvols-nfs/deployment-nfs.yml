@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-deploy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nfs-test
+  template:
+    metadata:
+      name: nfs-pod
+      labels:
+        app: nfs-test
+    spec:
+      volumes:
+        - name: nfs-pod-vol
+          persistentVolumeClaim:
+            claimName: nfs-pvc
+      containers:
+        - name: nfs-cont
+          image: alpine
+          volumeMounts:
+            - name: nfs-pod-vol
+              mountPath: /var/nfs
+          command: ["/bin/sh"]
+          args: ["-c", "while true; do echo `date` $MY_NODE_NAME $MY_POD_NAME >> /var/nfs/dates.txt; sleep 5; done"]
+          # Expose Pod Information through environment variables: https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/
+          env: 
+            - name: MY_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
