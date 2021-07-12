@@ -1,0 +1,18 @@
+# Create the Istio Gateway. Istio gateways let you use the full power and flexibility of Istio’s traffic routing.
+# Gateway allows you to manage inbound and outbound traffic for your mesh (aka application i.e. collection of services)
+# REMEMBER: This will only grant access to the mesh. The actual routing to the service will be decided by the virtual services using this gateway
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: helloworld-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+

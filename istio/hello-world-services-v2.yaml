@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-deploy-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: hello
+        version: v2
+    spec:
+     # One container which will print the value in the TEXT env var and 
+     # then, call the service enpoint in NEXT env var and print it ('world' service)
+      containers: 
+      - name: hello
+        image: wardviaene/http-echo
+        env:
+        - name: TEXT
+          value: hello, this is version 2
+        - name: NEXT
+          value: "world:8080"
+        ports:
+        - name: http-hello-port
+          containerPort: 8080

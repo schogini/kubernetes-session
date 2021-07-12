@@ -10,5 +10,5 @@ spec:
   persistentVolumeReclaimPolicy: Retain 
   nfs: 
     path: /mnt/sharedfolder
-    server: 3.15.234.10
+    server: 3.18.106.245
     readOnly: false

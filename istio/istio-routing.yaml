@@ -1,0 +1,58 @@
+# Step1: Create Destination Rules. It allows you to create additional subsets of pods under the service using labels
+# Destination Rules help us further group the pods under a service so that we can then, conditional route traffic to different pods under the same service
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: hello-dest-rule
+spec:
+  host: hello.myistio.svc.cluster.local
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
+
+# Step2: Create the virtual service that will be used to route the traffic from the gateway to the service
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: hello-virtual-service
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - helloworld-gateway
+  http:
+    # This specifies a subset. So, the traffic will be routed only to the pods in that particular subset under the service.
+    - match:
+      - uri:
+          prefix: /hello1
+      route:
+      - destination:
+          host: hello.myistio.svc.cluster.local
+          subset: v1
+    # This specifies a subset. So, the traffic will be routed only to the pods in that particular subset under the service.
+    - match:
+      - uri:
+          prefix: /hello2
+      route:
+      - destination:
+          host: hello.myistio.svc.cluster.local
+          subset: v2
+    # This doesn't specify any subset of the service. So, it will route traffic to all the pods under the service
+    # IMPORTANT: The rules are matched in the order in which you right them. 
+    #  If we have written the hello rule above hello2 then, always hello only would get executed because the string hello 
+    #  exists as a prefix in the string hello2. So, Istio will encounter the hello rule first and will never go down to the hello2 rule.
+    - match:
+      - uri:
+          prefix: /hello
+      route:
+      - destination:
+          host: hello  
+

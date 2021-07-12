@@ -1,0 +1,134 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: hello
+        version: v1
+    spec:
+     # One container which will print the value in the TEXT env var and 
+     # then, call the service enpoint in NEXT env var and print it ('world' service)
+      containers: 
+      - name: hello
+        image: wardviaene/http-echo
+        env:
+        - name: TEXT
+          value: hello
+        - name: NEXT
+          value: "world:8080"
+        ports:
+          - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello
+  labels:
+    app: hello
+spec:
+  selector:
+    app: hello
+  ports:
+  # In istio names for ports are mandatory and the format must be <protocol>-<name>
+  - name: http-web 
+    port: 8080
+    targetPort: 8080
+
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: world-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: world
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: world
+        version: v1
+    spec:
+     # One container which will print the value in the TEXT env var and 
+     # then, call the service enpoint in NEXT env var and print it
+      containers:
+      - name: world
+        image: wardviaene/http-echo
+        env:
+        - name: TEXT
+          value: world
+        - name: NEXT
+          value: "world-2:8080"
+        ports:
+          - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: world
+  labels:
+    app: world
+spec:
+  selector:
+    app: world
+  ports:
+    - name: http-web
+      port: 8080
+      targetPort: 8080
+
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: world-2-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: world-2
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: world-2
+        version: v1
+    spec:
+      containers:
+     # One container which will print the value in the TEXT env var and 
+     # THIS CONTAINER DOESN'T CALL ANY SERVICE unlike the previous 2 deployments
+      - name: world-2
+        image: wardviaene/http-echo
+        env:
+        - name: TEXT
+          value: "!!!"
+        ports:
+          - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: world-2
+  labels:
+    app: world-2
+spec:
+  selector:
+    app: world-2
+  ports:
+    - name: http-web
+      port: 8080
+      targetPort: 8080
+
