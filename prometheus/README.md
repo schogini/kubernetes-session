@@ -8,3 +8,7 @@ helm install my-prometheus --values values.yaml --namespace monitoring prometheu
 ```
 
 Prometheus Server is at: http://<Public IP>:31000/
+
+### Reference Links
+ - https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus
+ - https://github.com/prometheus-community/helm-charts
