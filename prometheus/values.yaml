@@ -1,0 +1,9 @@
+server:
+  service:
+    nodePort: 31000
+    type: NodePort
+  persistentVolume:
+    enabled: false
+alertmanager:
+  persistentVolume:
+    enabled: false

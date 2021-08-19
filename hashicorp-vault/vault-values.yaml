@@ -1,0 +1,13 @@
+server:
+  dataStorage:
+    enabled: true
+    size: 1Gi
+    storageClass: manual
+  dev:
+    enabled: true
+  standalone:
+    enabled: true
+ui:
+  enabled: true
+  serviceType: NodePort
+  serviceNodePort: 32000

@@ -1,18 +1,10 @@
-# kubernetes-prometheus
-Configuration files for setting up prometheus monitoring on Kubernetes cluster.
+### Setup Steps
+```
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add kube-state-metrics https://kubernetes.github.io/kube-state-metrics
+helm repo update
 
-You can find the full tutorial from here https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/
+helm install my-prometheus --values values.yaml --namespace monitoring prometheus-community/prometheus
+```
 
-
-# Notes By Gayatri
-
-# Setup Prometheus
-kubectl create namespace monitoring
-cd promentheus/
-kubectl apply -f ./prometheus/
-kubectl get deployments,services --namespace=monitoring
-
-# Take down Prometheus
-kubectl delete -f ./prometheus/
-kubectl delete namespace monitoring
-kubectl get deployments,services --namespace=monitoring
+Prometheus Server is at: http://<Public IP>:31000/
