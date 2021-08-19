@@ -1,0 +1,47 @@
+# when using multiple ports is mandatory to name them both 
+# in the service and deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  type: NodePort
+  ports:
+    - port: 9200
+      targetPort: 80
+      nodePort: 31000
+      name: http
+    - port: 9100
+      targetPort: 443
+      name: https
+  selector:
+    app: webserver
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webserver
+  template:
+    metadata:
+      name: nginx-pod
+      labels:
+        app: webserver
+    spec:
+      containers:
+        - name: n1
+          image: nginx
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
