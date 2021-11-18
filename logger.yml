@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: logger
 spec:
+  replicas: 5
   selector:
     matchLabels:
       app: logger

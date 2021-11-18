@@ -23,6 +23,8 @@ spec:
     - name: configmap-container
       image: nginx:alpine
       env: # load a single key from a config map
+        - name: MY_VAR1
+          value: Hello
         - name: MY_DEBUG_LEVEL
           valueFrom:
             configMapKeyRef:

@@ -8,9 +8,11 @@
    - https://www.vaultproject.io/docs/platform/k8s/helm/configuration#server
    - https://learn.hashicorp.com/tutorials/vault/kubernetes-raft-deployment-guide?in=vault/kubernetes#install-vault
    - https://discuss.hashicorp.com/t/kubernetes-vault-agent-init-sidecar-error-context-deadline-exceeded/24570/2
+   - https://www.vaultproject.io/docs/platform/k8s/helm
 
 ### STEP 1
 ```
+helm repo add hashicorp https://helm.releases.hashicorp.com
 kubectl create ns vault
 helm install vault hashicorp/vault --values vault-values.yaml --namespace vault
 ```
